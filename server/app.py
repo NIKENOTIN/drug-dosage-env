@@ -35,12 +35,10 @@ except Exception as e:  # pragma: no cover
         "openenv is required for the web interface. Install dependencies with '\n    uv sync\n'"
     ) from e
 
-try:
-    from ..models import DrugDosageAction, DrugDosageObservation
-    from .drug_dosage_env_environment import DrugDosageEnvironment
-except ModuleNotFoundError:
-    from models import DrugDosageAction, DrugDosageObservation
-    from server.drug_dosage_env_environment import DrugDosageEnvironment
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from models import DrugDosageAction, DrugDosageObservation
+from server.drug_dosage_env_environment import DrugDosageEnvironment
 
 
 # Create the app with web interface and README integration
