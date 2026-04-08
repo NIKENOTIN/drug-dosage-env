@@ -1,0 +1,29 @@
+name: drug-dosage-env
+version: 0.1.0
+description: >
+  An RL environment where an AI agent learns to recommend the correct
+  drug and dosage for hospital patients based on their condition,
+  allergies, kidney function, and vitals. Simulates real clinical
+  decision-making in emergency and routine scenarios.
+author: Nikhil Thakur
+tasks:
+  - name: easy
+    description: Simple fever case, no allergies, healthy patient
+    difficulty: easy
+  - name: medium
+    description: Bacterial infection with penicillin allergy and impaired kidneys
+    difficulty: medium
+  - name: hard
+    description: Emergency anaphylaxis, low blood pressure, time critical
+    difficulty: hard
+  - name: very_easy
+    description: Child patient (8 years), weight-based mild pain dosing
+    difficulty: very_easy
+  - name: very_hard
+    description: Elderly patient, multiple allergies, severe kidney impairment, diabetes
+    difficulty: very_hard
+tags:
+  - healthcare
+  - drug-dosage
+  - clinical-decision
+  - real-world

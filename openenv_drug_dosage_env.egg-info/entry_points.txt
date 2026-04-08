@@ -1,0 +1,2 @@
+[console_scripts]
+server = drug_dosage_env.server.app:main
