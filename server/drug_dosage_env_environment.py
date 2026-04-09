@@ -142,13 +142,13 @@ class DrugDosageEnvironment(Environment):
             feedback="Patient admitted. Choose the correct drug and dosage.",
             task_name=self._task_name,
             done=False,
-            reward=0.0,
+            reward=0.05,
         )
 
     def step(self, action: DrugDosageAction) -> DrugDosageObservation:
         self._state.step_count += 1
         t = self._task
-        reward = 0.0
+        reward = 0.05
         feedback_parts = []
 
         drug = action.drug_name.lower().strip()
@@ -158,13 +158,13 @@ class DrugDosageEnvironment(Environment):
         # Check drug exists
         if rules is None or drug not in t["available_drugs"]:
             self._done = True
-            return self._obs(0.0, "Unknown or unavailable drug selected.", done=True)
+            return self._obs(0.05, "Unknown or unavailable drug selected.", done=True)
 
         # Check contraindications
         for contra in rules["contraindications"]:
             if contra in t["allergies"] or contra == t["condition"]:
                 self._done = True
-                return self._obs(0.0, f"Dangerous! {drug} is contraindicated for this patient.", done=True)
+                return self._obs(0.05 , f"Dangerous! {drug} is contraindicated for this patient.", done=True)
 
         # Check drug treats the condition
         treats_condition = any(c in t["condition"] for c in rules["treats"])
@@ -177,7 +177,8 @@ class DrugDosageEnvironment(Environment):
 
         # Renal adjustment
         if rules["renal_adjustment"] and t["kidney_function"] != "normal":
-            reward = max(0.0, reward - 0.2)
+           # FIX - both lines same indent:
+            reward = max(0.01, reward - 0.2)
             feedback_parts.append("Warning: dose reduction needed for impaired kidneys.")
 
         # Weight-based dosing
@@ -197,7 +198,7 @@ class DrugDosageEnvironment(Environment):
         dose_diff = abs(dose - correct_dose)
 
         if dose > rules["max_dose_mg"]:
-            reward = 0.0
+            reward = 0.05  # was 0.0
             feedback_parts.append(f"Overdose! Max allowed is {rules['max_dose_mg']}mg.")
         elif dose_diff <= tolerance * 0.2:
             reward += 0.6
@@ -209,7 +210,8 @@ class DrugDosageEnvironment(Environment):
             reward += 0.1
             feedback_parts.append(f"Dosage is off. Ideal: {correct_dose}mg.")
 
-        reward = round(min(reward, 1.0), 2)
+        reward = round(min(reward, 0.99), 2)  # cap at 0.99 not 1.0
+        reward = max(reward, 0.01)            # floor at 0.01 not 0.0
         self._done = True
         self._last_reward = reward
         return self._obs(reward, ". ".join(feedback_parts), done=True)
